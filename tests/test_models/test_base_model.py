@@ -68,6 +68,11 @@ class TestBaseModel(unittest.TestCase):
             self.assertIn(attr, the_dict)
             self.assertIs(type(attr), str)
 
+    def test_based_from_dictionary(self):
+        self.my_other_model = BaseModel(self.my_model.to_dict())
+        self.assertEqual(my_model.__dict__, my_other_model.__dict__)
+        self.assertEqual(my_model.to_dict(), my_other_model.to_dict())
+
     def test_save(self):
         self.my_model.save()
         self.assertNotEqual(self.tmp, self.my_model.updated_at)
