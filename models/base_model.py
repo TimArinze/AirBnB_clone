@@ -12,11 +12,7 @@ class BaseModel:
 
     def __init__(self, *args, **kwargs):
         if kwargs:
-            for attr, value in kwargs.items():
-                if attr == '__class__':
-                    pass
-                if attr in ['created_at', 'updated_at']:
-                    setattr(self, attr, value)
+            
 
     def __str__(self):
         """Readabe representation of an instance"""
