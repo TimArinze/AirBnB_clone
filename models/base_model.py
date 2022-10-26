@@ -22,9 +22,9 @@ class BaseModel:
                     if attr in ['created_at', 'updated_at']:
                         fmt = "%Y-%m-%dT%H:%M:%S.%f"
                         value = datetime.strptime(value, fmt)
-
+                        setattr(self, attr, value)
                     setattr(self, attr, value)
-
+    
     def __str__(self):
         """Readabe representation of an instance"""
         cls_name = self.__class__.__name__

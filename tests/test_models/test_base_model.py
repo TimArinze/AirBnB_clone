@@ -15,6 +15,7 @@ class TestBaseModel(unittest.TestCase):
         self.my_model.name = "My First Model"
         self.my_model.my_number = 89
         self.tmp = self.my_model.updated_at
+        self.maxDiff = None
 
     def test_isinstance_of_BaseModel(self):
         """Test class of an instance"""
@@ -69,9 +70,10 @@ class TestBaseModel(unittest.TestCase):
             self.assertIs(type(attr), str)
 
     def test_based_from_dictionary(self):
-        self.my_other_model = BaseModel(self.my_model.to_dict())
-        self.assertEqual(my_model.__dict__, my_other_model.__dict__)
-        self.assertEqual(my_model.to_dict(), my_other_model.to_dict())
+        the_dict = self.my_model.to_dict()
+        my_other_model = BaseModel(**the_dict)
+        self.assertEqual(self.my_model.__dict__, my_other_model.__dict__)
+        self.assertEqual(self.my_model.to_dict(), my_other_model.to_dict())
 
     def test_save(self):
         self.my_model.save()
