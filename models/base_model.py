@@ -10,10 +10,13 @@ class BaseModel:
     """"BaseModel : a base class for common attributes and methods for futures
         classes"""
 
-    def __init__(self):
-        self.id = str(uuid4())
-        self.created_at = datetime.now()
-        self.updated_at = datetime.now()
+    def __init__(self, *args, **kwargs):
+        if kwargs:
+            for attr, value in kwargs.items():
+                if attr == '__class__':
+                    pass
+                if attr in ['created_at', 'updated_at']:
+                    setattr(self, attr, value)
 
     def __str__(self):
         """Readabe representation of an instance"""
