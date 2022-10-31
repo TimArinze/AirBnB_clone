@@ -6,6 +6,7 @@
 
 from uuid import uuid4
 from datetime import datetime
+import models
 
 
 class BaseModel:
@@ -14,9 +15,14 @@ class BaseModel:
     def __init__(self, *args, **kwargs):
         """initialization of the class"""
 
+        if kwargs:
+            for key, value in kwargs.items():
+                if key != '__class__':
+                    setattr(self, key, value)
         self.id = str(uuid4())
         self.created_at = datetime.now()
         self.updated_at = datetime.now()
+        models.storage.save()
 
     def __str__(self):
         """__str__"""
