@@ -1,13 +1,17 @@
 #!/usr/bin/python3
 
+
 """ BaseModel that defines all common attributes/methods for other classes """
+
 
 from uuid import uuid4
 from datetime import datetime
 import models
 
+
 class BaseModel:
     """ Base Model """
+
     def __init__(self, *args, **kwargs):
         """initialization of the class"""
 
@@ -26,7 +30,8 @@ class BaseModel:
 
     def __str__(self):
         """__str__"""
-        return "[{}] ({}) {}".format(__class__.__name__, self.id, self.__dict__)
+        cls = __class__.__name__
+        return "[{}] ({}) {}".format(cls, self.id, self.__dict__)
 
     def save(self):
         """save"""
