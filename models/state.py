@@ -3,26 +3,8 @@
 
 from models.base_model import BaseModel
 
+
 class State(BaseModel):
     """State inherits from BaseModel class and defines a state"""
 
     name = ""
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

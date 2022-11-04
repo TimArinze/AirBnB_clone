@@ -3,6 +3,7 @@
 
 from models.base_model import BaseModel
 
+
 class User(BaseModel):
     """User inherits from BaseModel class and defines a user of this app"""
 
@@ -10,22 +11,3 @@ class User(BaseModel):
     password = ""
     first_name = ""
     last_name = ""
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

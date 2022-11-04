@@ -13,13 +13,13 @@ from models.state import State
 
 
 all_cls = {
-    "BaseModel":BaseModel,
-    "User":User,
-    "Review":Review,
-    "Place":Place,
-    "Amenity":Amenity,
-    "City":City,
-    "State":State
+    "BaseModel": BaseModel,
+    "User": User,
+    "Review": Review,
+    "Place": Place,
+    "Amenity": Amenity,
+    "City": City,
+    "State": State
     }
 
 
