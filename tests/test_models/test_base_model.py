@@ -58,7 +58,10 @@ class TestBaseModel(unittest.TestCase):
         self.assertIsInstance(self.my_model.updated_at, datetime.datetime)
 
     def test_to_dict(self):
-        """All test for to_dict method"""
+        """All tests for to_dict method"""
+
+        '''Testing if to_dict is a method of BaseModel'''
+        self.assertIn('save',BaseModel.__dict__.keys())
         the_dict = self.my_model.to_dict()
         """Testing if to_dict return a dictionary object"""
         self.assertIs(type(the_dict), dict)
@@ -70,15 +73,29 @@ class TestBaseModel(unittest.TestCase):
             self.assertIs(type(attr), str)
 
     def test_based_from_dictionary(self):
+        '''Testing instanciation from a previous instance'''
         the_dict = self.my_model.to_dict()
         my_other_model = BaseModel(**the_dict)
         self.assertEqual(self.my_model.__dict__, my_other_model.__dict__)
         self.assertEqual(self.my_model.to_dict(), my_other_model.to_dict())
 
     def test_save(self):
+        """All tests for save method"""
+
+        '''Testing if save is a method of BaseModel'''
+        self.assertIn('save', BaseModel.__dict__.keys())
         self.my_model.save()
+        '''Testing if updated_at changes when calling save method'''
         self.assertNotEqual(self.tmp, self.my_model.updated_at)
 
+    def test_str_representation(self):
+        """All tests for string representation"""
+
+        '''Testing if __str__ is defined in BaseModel'''
+        self.assertIN('__str__', BaseModel.__dict__.keys())
+        class_name = my_model.__class__.__name__
+        s = "[{}] ({}) {}".format(class_name, my_model.id, my_model.__dict__)
+        assertEqual(self.my_model.__str__(), s)
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
