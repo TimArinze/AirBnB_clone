@@ -118,6 +118,7 @@ class HBNBCommand(cmd.Cmd):
                 return
             else:
                 del all_objs[attr]
+                models.storage.save()
 
     def do_all(self, arg):
         arg = arg.split()
@@ -174,7 +175,16 @@ class HBNBCommand(cmd.Cmd):
 
             else:
                 an_obj = all_objs[arg[0] + '.' + arg[1]]
-                an_obj.__dict__[arg[2]] = arg[3][1: len(arg[3]) - 1]
+                if arg[3].isdigit() == True:
+                    arg[3] = int(arg[3])
+                elif isfloat(arg[3]) == True:
+                    arg[3] = float(arg[3])
+                else:
+                    arg[3] = arg[3].replace('"', '')
+
+                an_obj.__dict__[arg[2]] = arg[3]
+                all_objs[arg[0] + '.' + arg[1]] = an_obj
+                an_obj.save()
 
     def default(self, line):
         cmd_functions = {
@@ -215,36 +225,64 @@ class HBNBCommand(cmd.Cmd):
 
                     i = i + 1
                     if i >= len(cmd_1):
-                        print('missing ")" at the end')
+                        print('*** Unknown syntax:', line)
                         return
 
-                    if i < len(cmd_1):
-                        if cmd_1[i] == ')':
-                            cmd_functions[cmd_func](cls_name)
+                    if cmd_func in  ['all', 'count']:
+                        if (i == len(cmd_1) - 1 and cmd_1[i] != ')') or\
+                                (i < len(cmd_1) - 1 and cmd_1[i] == ')'):
+                            print('*** Unknown syntax', line)
                             return
 
-                        if cmd_1[i] != '"' or cmd_1[len_cmd_1 - 2] != '"'\
-                                or cmd_1[len_cmd_1 - 1] != ')':
-                            print('missing ")(" at the end')
+                        cmd_functions[cmd_func](cls_name)
+
+                    if cmd_func in ['show', 'destroy']:
+                        cmd_arg = cmd_1[i:].replace('(', '').replace('"', '')
+                        cmd_arg = cmd_arg.replace(')', '')
+                        cmd_functions[cmd_func](cls_name + ' ' + cmd_arg)
+
+                    if cmd_func == 'update':
+                        cmd_args = cmd_1[i:].replace('(', '').replace('"', '')
+                        cmd_args = cmd_args.replace(')', '').replace('{', '')
+                        cmd_args = cmd_args.split(',')
+
+                        if len(cmd_args) > 2:
+                            first = cmd_args[0]
+                            second = cmd_args[1]
+                            last = cmd_args[2]
+
+                            the_args = first + ' ' + second + ' ' + last
+                            cmd_functions[cmd_func](cls_name + ' ' + the_args)
+
+                        else:
+                            print('*** Unknown syntax:', line)
                             return
 
-                        if cmd_1[i] == '"' and cmd_1[len_cmd_1 - 2] == '"':
-                            cmd_args = cmd_line[1][i+1:len_cmd_1 - 2]
-                            if ',' not in cmd_args:
-                                the_args = cls_name + ' ' + cmd_args
-                                cmd_functions[cmd_func](the_args)
-                            else:
-                                the_args = str()
-                                for i in cmd_args.split(','):
-                                    the_args += i + ' '
-                                the_args = the_args.replace('"', '')
+                else:
+                    print('*** Unknown syntax:', line)
+                    return
 
-                                cmd_functions[cmd_func](cls_name + " " + the_args)
 
     def do_clear(self, arg):
         from os import system
         system('clear')
 
+    def occurrence(word, c):
+        count = 0
+        for i in word:
+            if i == c:
+                count += 1
+        return count
+
+    def isfloat(string):
+        if '.' in string and occurrence(string, '.') == 1:
+            n = string.replace('.','')
+            if n.isdigit() == True:
+                return True
+            else:
+                False
+        else:
+            False
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()

@@ -7,6 +7,8 @@ Prototype: def clear()
 
 Return: Nothing
 """
+
+
 def clear():
     import os
     os.system('clear')
