@@ -37,14 +37,18 @@ button:hover {
 	border-color: #DDDDDD;
 	float: left;
 	line-height: 100%;
-	margin-left: 30px;
+	text-indent: 30px;
+	display: inline-block;
+	position: relative;
 }
 .amenities {
 	height: 100%;
 	width: 25%;
 	float: left;
 	line-height: 100%;
-	margin-left: 30px;
+	text-indent: 30px;
+	display: inline-block;
+	position: relative;
 }
 h3 {
 	font-weight: 600;
@@ -55,32 +59,26 @@ h4 {
 	margin-top: -15px;
 }
 .popover {
-	position: relative;
-	display: inline-block;
-}
-.pop-content {
 	display: none;
 	position: absolute;
-	background-color: #FAFAFA;
-}
-.popover:hover .pop-content {
-	display: block;
-}
-/*.popover {
-	overflow: hidden;
-	opacity: 0;
-	list-style: none;
-}
-.amenities:hover .popover {
-	background-color: #FAFAFA;
 	width: 100%;
+	overflow: auto;
 	border-radius: 4px;
-	display: block;
-	margin-left: -30px;
 	border-color: #DDDDDD;
 	border-width: 1px;
-	text-align: left;
 	border-style: solid;
-	opacity: 1;
-	margin-top: -1px;
-}*/
+	background-color: #FAFAFA;
+	text-align: left;
+}
+.amenities:hover .popover {
+	display: block;
+}
+.location:hover .popover {
+	display: block;
+}
+ul {
+	list-style: none;
+}
+h2 {
+	font-size: 16px;
+}
