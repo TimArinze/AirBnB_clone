@@ -63,7 +63,7 @@ class TestBaseModel(unittest.TestCase):
         """All tests for to_dict method"""
 
         '''Testing if to_dict is a method of BaseModel'''
-        self.assertIn('save', BaseModel.__dict__.keys())
+        self.assertIn('to_dict', BaseModel.__dict__.keys())
         the_dict = self.my_model.to_dict()
         """Testing if to_dict return a dictionary object"""
         self.assertIs(type(the_dict), dict)
