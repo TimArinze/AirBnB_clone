@@ -1,6 +1,13 @@
-__pycache__/*
-*/__pyc*
-*/*/__pyc*
+__pycache__/*.pyc
+*/__pycache__/*.pyc
+*/*/__pycache__/*.pyc
+
 *main*
 */*main*
 */*/*main*
+
+*json
+
+*test_*
+
+hello
