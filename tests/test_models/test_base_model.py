@@ -1,4 +1,6 @@
 #!/usr/bin/python3
+'''test_base_model module'''
+
 
 import unittest
 import datetime
@@ -61,7 +63,7 @@ class TestBaseModel(unittest.TestCase):
         """All tests for to_dict method"""
 
         '''Testing if to_dict is a method of BaseModel'''
-        self.assertIn('save',BaseModel.__dict__.keys())
+        self.assertIn('save', BaseModel.__dict__.keys())
         the_dict = self.my_model.to_dict()
         """Testing if to_dict return a dictionary object"""
         self.assertIs(type(the_dict), dict)
@@ -92,10 +94,17 @@ class TestBaseModel(unittest.TestCase):
         """All tests for string representation"""
 
         '''Testing if __str__ is defined in BaseModel'''
-        self.assertIN('__str__', BaseModel.__dict__.keys())
-        class_name = my_model.__class__.__name__
-        s = "[{}] ({}) {}".format(class_name, my_model.id, my_model.__dict__)
-        assertEqual(self.my_model.__str__(), s)
+        self.assertIn('__str__', BaseModel.__dict__.keys())
+        class_name = self.my_model.__class__.__name__
+        my_model_id = self.my_model.id
+        my_model_created_at = repr(self.my_model.created_at)
+        my_model_updated_at = repr(self.my_model.updated_at)
+        s = self.my_model.__str__()
+        self.assertIn("[{}] ({})".format(class_name, my_model_id), s)
+        self.assertIn("'id': '{}'".format(my_model_id), s)
+        self.assertIn("'created_at': " + my_model_created_at, s)
+        self.assertIn("'updated_at': " + my_model_updated_at, s)
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

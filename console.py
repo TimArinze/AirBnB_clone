@@ -41,6 +41,7 @@ class HBNBCommand(cmd.Cmd):
         pass
 
     def do_create(self, arg):
+        '''Initializes a new instance by specifying only a class name'''
         if not arg:
             print("** class name missing **")
 
@@ -53,6 +54,7 @@ class HBNBCommand(cmd.Cmd):
             new.save()
 
     def do_count(self, arg):
+        '''Gives the number of instances of a class'''
         arg = arg.split()
         all_objs = models.storage.all()
         count = 0
@@ -71,6 +73,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class doesn't exist **")
 
     def do_show(self, arg):
+        '''Prints an instance based on its class an id'''
         all_objs = models.storage.all()
 
         arg = arg.split()
@@ -96,6 +99,7 @@ class HBNBCommand(cmd.Cmd):
                 print(all_objs[attr])
 
     def do_destroy(self, arg):
+        '''Deletes an instance based on its class an id'''
         all_objs = models.storage.all()
 
         arg = arg.split()
@@ -121,6 +125,8 @@ class HBNBCommand(cmd.Cmd):
                 models.storage.save()
 
     def do_all(self, arg):
+        '''Prints all instances of a class name if specified, otherwise all
+            instances are printed'''
         arg = arg.split()
         all_objs = models.storage.all()
 
@@ -139,6 +145,8 @@ class HBNBCommand(cmd.Cmd):
             print("** class doesn't exist **")
 
     def do_update(self, arg):
+        '''Update an instance based on its class name, its id, a name attribute
+            and a its value'''
         arg = arg.split()
         all_objs = models.storage.all()
 
@@ -175,9 +183,9 @@ class HBNBCommand(cmd.Cmd):
 
             else:
                 an_obj = all_objs[arg[0] + '.' + arg[1]]
-                if arg[3].isdigit() == True:
+                if arg[3].isdigit():
                     arg[3] = int(arg[3])
-                elif isfloat(arg[3]) == True:
+                elif isfloat(arg[3]):
                     arg[3] = float(arg[3])
                 else:
                     arg[3] = arg[3].replace('"', '')
@@ -187,6 +195,7 @@ class HBNBCommand(cmd.Cmd):
                 an_obj.save()
 
     def default(self, line):
+        '''Handle unrecognized syntax'''
         cmd_functions = {
             "all": self.do_all,
             "count": self.do_count,
@@ -228,7 +237,7 @@ class HBNBCommand(cmd.Cmd):
                         print('*** Unknown syntax:', line)
                         return
 
-                    if cmd_func in  ['all', 'count']:
+                    if cmd_func in ['all', 'count']:
                         if (i == len(cmd_1) - 1 and cmd_1[i] != ')') or\
                                 (i < len(cmd_1) - 1 and cmd_1[i] == ')'):
                             print('*** Unknown syntax', line)
@@ -262,12 +271,13 @@ class HBNBCommand(cmd.Cmd):
                     print('*** Unknown syntax:', line)
                     return
 
-
     def do_clear(self, arg):
+        '''clear the stdin'''
         from os import system
         system('clear')
 
     def occurrence(word, c):
+        '''Return the number of occurrence of a character in a string'''
         count = 0
         for i in word:
             if i == c:
@@ -275,14 +285,18 @@ class HBNBCommand(cmd.Cmd):
         return count
 
     def isfloat(string):
+        '''Checks if a string can be converted to float
+            Return: True if the string can be converted into Python Float
+                    False, otherwhise'''
         if '.' in string and occurrence(string, '.') == 1:
-            n = string.replace('.','')
-            if n.isdigit() == True:
+            n = string.replace('.', '')
+            if n.isdigit():
                 return True
             else:
                 False
         else:
             False
+
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
