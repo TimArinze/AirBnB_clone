@@ -26,7 +26,7 @@ class TestBaseModel(unittest.TestCase):
     def test_id_attribute(self):
         """All individual tests for id attribute"""
 
-        """Testing if an instance automatically has the id attribute"""
+        """Testing if an instance automatically has the id member"""
         self.assertTrue(hasattr(self.my_model, 'id'))
 
         """Testing current type of id"""
@@ -40,6 +40,9 @@ class TestBaseModel(unittest.TestCase):
                 Using uuid.UUID function return the uuid object that gives this
                 string."""
             uuid.UUID(self.my_model.id)
+        '''Testing if `id` is really an attribute'''
+        with self.assertRaises(TypeError):
+            self.my_model.id()
 
     def test_created_at_attribute(self):
         """All individual tests for created_at attribute"""
