@@ -30,13 +30,13 @@ class TestFileStorage(unittest.TestCase):
     def setUpClass(self):
         """Prepraring test cases"""
         self.fs = FileStorage()
+        self.new_fs = FileStorage()
 
     @classmethod
     def tearDownClass(self):
         if os.path.isfile(self.fs._FileStorage__file_path):
             os.remove(self.fs._FileStorage__file_path)
         self.fs._FileStorage__objects = {}
-        del self.fs
 
     def test_isinstance_of_FileStorage(self):
         """Test class of an instance"""
@@ -158,7 +158,6 @@ class TestFileStorage(unittest.TestCase):
         '''Testing if `__file_path` exists'''
         self.assertTrue(os.path.isfile(self.fs._FileStorage__file_path))
         self.assertTrue(os.stat(self.fs._FileStorage__file_path).st_size != 0)
-        print(os.stat(self.fs._FileStorage__file_path).st_size)
 
     def test_reload(self):
         """All individual tests for reload member"""
@@ -169,6 +168,10 @@ class TestFileStorage(unittest.TestCase):
         '''Testing more than 1 argument passed'''
         with self.assertRaises(TypeError):
             self.fs.new(1, True)
+
+        '''Testing if `__objects` is not empty'''
+        self.fs.reload()
+        self.assertTrue(self.fs._FileStorage__objects != {})
 
 
 if __name__ == '__main__':
