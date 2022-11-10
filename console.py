@@ -284,18 +284,18 @@ class HBNBCommand(cmd.Cmd):
                 count += 1
         return count
 
-    def isfloat(string):
-        '''Checks if a string can be converted to float
-            Return: True if the string can be converted into Python Float
-                    False, otherwhise'''
-        if '.' in string and occurrence(string, '.') == 1:
-            n = string.replace('.', '')
-            if n.isdigit():
-                return True
-            else:
-                False
+def isfloat(string):
+    '''Checks if a string can be converted to float
+        Return: True if the string can be converted into Python Float
+                False, otherwhise'''
+    if '.' in string and occurrence(string, '.') == 1:
+        n = string.replace('.', '')
+        if n.isdigit():
+            return True
         else:
             False
+    else:
+        False
 
 
 if __name__ == '__main__':
