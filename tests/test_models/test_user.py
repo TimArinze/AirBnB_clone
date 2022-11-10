@@ -96,6 +96,9 @@ class TestUser(unittest.TestCase):
         self.assertIn('password', dir(User))
         self.assertNotIn('password', self.my_user.__dict__)
 
+        self.my_user.password = "pswrd"
+        self.assertIn('password', self.my_user.__dict__)
+
         '''Testing if `password` is callable member'''
         with self.assertRaises(TypeError):
             self.my_user.password()
@@ -103,9 +106,13 @@ class TestUser(unittest.TestCase):
     def test_first_name_attribute(self):
         """All individual tests for first_name attribute"""
 
+        self.assertTrue(hasattr('email'))
         '''Testing if `first_name` is a public attribute'''
         self.assertIn('first_name', dir(User))
         self.assertNotIn('first_name', self.my_user.__dict__)
+
+        self.my_user.first_name = "BLACK"
+        self.assertIn('first_name', self.my_user.__dict__)
 
         '''Testing if `first_name` is callable member'''
         with self.assertRaises(TypeError):
@@ -118,6 +125,9 @@ class TestUser(unittest.TestCase):
         self.assertIn('last_name', dir(self.my_user))
         self.assertNotIn('last_name', self.my_user.__dict__)
 
+        self.my_user.last_name = "MIGHT"
+        self.assertIn('last_name', self.my_user.__dict__)
+
         '''Testing if `last_name` is callable member'''
         with self.assertRaises(TypeError):
             self.my_user.last_name()
@@ -126,7 +136,6 @@ class TestUser(unittest.TestCase):
         """All tests for to_dict method"""
 
         '''Testing if `to_dict` is a member'''
-        self.assertIn('to_dict', dir(User))
         self.assertIn('to_dict', dir(User))
 
         the_dict = self.my_user.to_dict()
@@ -169,7 +178,7 @@ class TestUser(unittest.TestCase):
         self.assertIn("'id': '{}'".format(my_user_id), s)
         self.assertIn("'created_at': " + my_user_created_at, s)
         self.assertIn("'updated_at': " + my_user_updated_at, s)
-
+        self.assertIn("'email': '{}'".format(self.my_user.email), s)
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
