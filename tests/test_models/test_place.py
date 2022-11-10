@@ -91,6 +91,7 @@ class TestPlace(unittest.TestCase):
 
         '''Testing type of city_id'''
         self.assertTrue(type(self.my_place.city_id) == str)
+
     def test_user_id_attribute(self):
         """All individual tests for user_id attribute"""
 
