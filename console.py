@@ -44,9 +44,11 @@ class HBNBCommand(cmd.Cmd):
         '''Initializes a new instance by specifying only a class name'''
         if not arg:
             print("** class name missing **")
+            return
 
-        if arg not in HBNBCommand.__classes.keys():
+        if arg not in HBNBCommand.__classes:
             print("** class doesn't exist **")
+            return
 
         if arg in HBNBCommand.__classes.keys():
             new = HBNBCommand.__classes[arg]()
@@ -55,14 +57,15 @@ class HBNBCommand(cmd.Cmd):
 
     def do_count(self, arg):
         '''Gives the number of instances of a class'''
-        arg = arg.split()
         all_objs = models.storage.all()
         count = 0
         if not arg:
             print("** class name missing **")
+            return
 
-        if arg[0] not in HBNBCommand.__classes.keys():
+        if arg not in HBNBCommand.__classes:
             print("** class doesn't exist **")
+            return
 
         if len(arg) == 1 and arg[0] in HBNBCommand.__classes.keys():
             for obj_id in all_objs:
