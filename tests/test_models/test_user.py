@@ -106,7 +106,6 @@ class TestUser(unittest.TestCase):
     def test_first_name_attribute(self):
         """All individual tests for first_name attribute"""
 
-        self.assertTrue(hasattr('email'))
         '''Testing if `first_name` is a public attribute'''
         self.assertIn('first_name', dir(User))
         self.assertNotIn('first_name', self.my_user.__dict__)
@@ -183,6 +182,7 @@ class TestUser(unittest.TestCase):
         self.assertIn("'email': '{}'".format(self.my_user.email), s)
         self.assertIn("'first_name': '{}'".format(self.my_user.first_name), s)
         self.assertIn("'last_name': '{}'".format(self.my_user.last_name), s)
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
