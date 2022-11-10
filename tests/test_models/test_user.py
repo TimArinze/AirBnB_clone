@@ -179,6 +179,10 @@ class TestUser(unittest.TestCase):
         self.assertIn("'created_at': " + my_user_created_at, s)
         self.assertIn("'updated_at': " + my_user_updated_at, s)
         self.assertIn("'email': '{}'".format(self.my_user.email), s)
+        self.assertIn("'password': '{}'".format(self.my_user.password), s)
+        self.assertIn("'email': '{}'".format(self.my_user.email), s)
+        self.assertIn("'first_name': '{}'".format(self.my_user.first_name), s)
+        self.assertIn("'last_name': '{}'".format(self.my_user.last_name), s)
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
