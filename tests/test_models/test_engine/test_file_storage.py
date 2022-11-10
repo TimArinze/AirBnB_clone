@@ -59,12 +59,6 @@ class TestFileStorage(unittest.TestCase):
         '''Testing if `__file_path` already exists'''
         self.assertFalse(os.path.isfile(self.fs._FileStorage__file_path))
 
-        with self.assertRaises(FileNotFoundError):
-            with open(self.fs._FileStorage__file_path, 'r') as f:
-                lines = f.readlines()
-                for line in lines:
-                    print(line)
-
         """Testing current type of __file_path attribute"""
         self.assertIsInstance(self.fs._FileStorage__file_path, str)
 
@@ -169,9 +163,20 @@ class TestFileStorage(unittest.TestCase):
         with self.assertRaises(TypeError):
             self.fs.new(1, True)
 
-        '''Testing if `__objects` is not empty'''
+        '''Testing reload an emprty file'''
+        self.fs._FileStorage__objects = dict()
+        if os.path.isfile(self.fs._FileStorage__file_path):
+            os.remove(self.fs._FileStorage__file_path)
         self.fs.reload()
-        self.assertTrue(self.fs._FileStorage__objects != {})
+        objs = self.fs.all()
+        self.assertTrue(objs == {})
+
+        '''Testing reload a non-empty file'''
+        inst = BaseModel()
+        inst.save()
+        self.fs.reload()
+        objs = self.fs.all()
+        self.assertTrue(objs != {})
 
 
 if __name__ == '__main__':
