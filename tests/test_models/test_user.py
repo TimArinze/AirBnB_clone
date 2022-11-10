@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-'''test_base_model module'''
+'''test_user module'''
 
 
 import unittest
