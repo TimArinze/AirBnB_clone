@@ -21,10 +21,11 @@ class BaseModel:
                     setattr(self, key, value)
                 else:
                     continue
-        self.id = str(uuid4())
-        self.created_at = datetime.now()
-        self.updated_at = datetime.now()
-        models.storage.save()
+        else:
+            self.id = str(uuid4())
+            self.created_at = datetime.now()
+            self.updated_at = datetime.now()
+            models.storage.new(self)
 
     def __str__(self):
         """__str__"""
@@ -34,6 +35,7 @@ class BaseModel:
     def save(self):
         """save"""
         self.updated_at = datetime.now()
+        models.storage.save()
 
     def to_dict(self):
         """Returns a dictionary containing all keys/values of __dict__"""
