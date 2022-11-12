@@ -17,6 +17,7 @@ class TestBaseModel(unittest.TestCase):
         self.my_model.name = "My First Model"
         self.my_model.my_number = 89
         self.tmp = self.my_model.updated_at
+        self.id = self.my_model.id
         self.maxDiff = None
 
     def test_isinstance_of_BaseModel(self):
@@ -43,6 +44,8 @@ class TestBaseModel(unittest.TestCase):
         '''Testing if `id` is really an attribute'''
         with self.assertRaises(TypeError):
             self.my_model.id()
+
+        self.my_model.id = self.id
 
     def test_created_at_attribute(self):
         """All individual tests for created_at attribute"""
@@ -92,6 +95,13 @@ class TestBaseModel(unittest.TestCase):
         self.my_model.save()
         '''Testing if updated_at changes when calling save method'''
         self.assertNotEqual(self.tmp, self.my_model.updated_at)
+
+        '''Testing if the instance is save in the file storage'''
+        key = self.my_model.__class__.__name__ + '.' + self.my_model.id
+        with open('file.json', 'r') as f:
+            from json import load
+            json_obj = load(f)
+            self.assertEqual(json_obj[key], self.my_model.to_dict())
 
     def test_str_representation(self):
         """All tests for string representation"""

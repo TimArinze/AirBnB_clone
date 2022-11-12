@@ -2,6 +2,7 @@
 '''console module is the entry point of the command interpreter'''
 
 import cmd
+import sys
 from models.base_model import BaseModel
 from models.user import User
 from models.review import Review
@@ -13,7 +14,7 @@ import models
 
 
 class HBNBCommand(cmd.Cmd):
-    prompt = '(hbnb)'
+    prompt = '(hbnb)' if sys.__stdin__.isatty() else ''
     __classes = {
         "BaseModel": BaseModel,
         "User": User,
@@ -57,23 +58,20 @@ class HBNBCommand(cmd.Cmd):
 
     def do_count(self, arg):
         '''Gives the number of instances of a class'''
+        arg = arg.split()
         all_objs = models.storage.all()
         count = 0
-        if not arg:
-            print("** class name missing **")
-            return
-
-        if arg not in HBNBCommand.__classes:
-            print("** class doesn't exist **")
-            return
-
         if len(arg) == 1 and arg[0] in HBNBCommand.__classes.keys():
+            arr = list()
             for obj_id in all_objs:
                 if arg[0] == obj_id.split('.')[0]:
                     count += 1
             print(count)
-        else:
-            print("** class doesn't exist **")
+        elif not arg:
+            arr = list()
+            for obj_id in all_objs:
+                count += 1
+            print(count)
 
     def do_show(self, arg):
         '''Prints an instance based on its class an id'''
@@ -186,12 +184,15 @@ class HBNBCommand(cmd.Cmd):
 
             else:
                 an_obj = all_objs[arg[0] + '.' + arg[1]]
+
+                arg[2] = arg[2].replace('"', '').replace("'", '')
+
                 if arg[3].isdigit():
                     arg[3] = int(arg[3])
                 elif isfloat(arg[3]):
                     arg[3] = float(arg[3])
                 else:
-                    arg[3] = arg[3].replace('"', '')
+                    arg[3] = arg[3].replace('"', '').replace("'", '')
 
                 an_obj.__dict__[arg[2]] = arg[3]
                 all_objs[arg[0] + '.' + arg[1]] = an_obj
@@ -207,69 +208,134 @@ class HBNBCommand(cmd.Cmd):
             "update": self.do_update
         }
 
-        cmd_line = line.split('.')
-        if len(cmd_line) == 1:
+        chars = [chr(32), chr(8), chr(9), chr(10), chr(11), chr(12), chr(13)]
+        for char in chars:
+            clean_line = line.replace(char, '')
+
+        if '.' not in line:
             print('*** Unknown syntax:', line)
             return
 
-        if len(cmd_line) == 2:
-            cmd_0 = cmd_line[0].replace(" ", "")
-            cmd_1 = cmd_line[1].replace(" ", "")
-            if cmd_0 not in HBNBCommand.__classes.keys():
+        dot_idx = clean_line.find('.')
+        if dot_idx == -1:
+            print('*** Unknown syntax:', line)
+            return
+
+        if dot_idx + 1 >= len(line):
+            print('*** Unknown syntax:', line)
+            return
+
+        cmd_cls = clean_line[:dot_idx]
+        if cmd_cls not in HBNBCommand.__classes.keys():
+            print('*** Unknown syntax:', line)
+            return
+
+        remain = clean_line[dot_idx + 1:]
+
+        if '(' not in remain or ')' not in remain\
+                or ('(' in remain and remain[len(remain) - 1] !=')'):
+            print('*** Unknown syntax:', line)
+            return
+
+        op_idx = remain.index('(')
+        cmd_func = remain[:op_idx]
+        if cmd_func not in cmd_functions:
+            print('*** Unknown syntax:', line)
+            return
+
+        if remain.find('(', op_idx + 1) != -1:
                 print('*** Unknown syntax:', line)
                 return
+        if cmd_func in ['all', 'count']:
+            cp_idx = remain.find(')',op_idx + 1)
+            if cp_idx != -1 and remain.find(')', cp_idx + 1) != -1:
+                print('*** Unknown syntax:', line)
+                return
+
+            cmd_functions[cmd_func](cmd_cls)
+            return
+
+        if remain[op_idx + 1] not in ['"', "'"]:
+            print('*** Unknown syntax:', line)
+            return
+
+        if cmd_func in ['show', 'destroy']:
+            if (remain[op_idx + 1] == '"' and remain[len(remain) - 2] != '"')\
+                    or (remain[op_idx + 1] == "'"\
+                    and remain[len(remain) - 2] != "'"):
+                print('*** Unknown syntax:', line)
+                return
+            cmd_arg = remain[op_idx + 2:len(remain) - 1]
+            cmd_arg = cmd_arg.replace('"', '').replace("'", '')
+
+            cmd_functions[cmd_func](cmd_cls + ' ' + cmd_arg)
+            return
+
+        if cmd_func == 'update':
+            if '{' not in remain:
+                if ',' in remain and occurrence(remain, ',') == 2:
+                    the_args = remain[len(cmd_func) + 1:].split(',')
+                    if len(the_args) == 3:
+                        id_arg = the_args[0].replace('"', '').replace("'", '')
+                        key_arg = the_args[1].replace('"', '').replace("'", '')
+                        value_arg = the_args[2].replace(')', '')
+                        value_arg = value_arg.replace('"', '').replace("'", '')
+                        args = id_arg + ' ' + key_arg + ' ' + value_arg
+
+                        cmd_functions[cmd_func](cmd_cls + ' ' + args)
+
+                    else:
+                        print('*** Unknown syntax:', line)
+                        return
+
+                else:
+                    print('*** Unknown syntax:', line)
+                    return
+
             else:
-                cls_name = cmd_0
-                len_cmd_1 = len(cmd_1)
-                if '(' in cmd_1:
-                    cmd_func = str()
-                    i = 0
-                    for c in cmd_1:
-                        if c != "(":
-                            cmd_func += c
-                            i += 1
-                        if c == "(":
-                            break
-
-                    if cmd_func not in cmd_functions:
+                if remain[len(remain) - 2] == '}':
+                    comma_idx = remain.find(',')
+                    if comma_idx == - 1:
                         print('*** Unknown syntax:', line)
                         return
 
-                    i = i + 1
-                    if i >= len(cmd_1):
-                        print('*** Unknown syntax:', line)
-                        return
+                    id_arg = remain[op_idx + 1:comma_idx].replace("'", '')
+                    id_arg = id_arg.replace('"', '')
+                    ob_idx = remain.find('{')
+                    cb_idx = remain.find('}')
+                    the_dict = remain[ob_idx + 1: cb_idx]
 
-                    if cmd_func in ['all', 'count']:
-                        if (i == len(cmd_1) - 1 and cmd_1[i] != ')') or\
-                                (i < len(cmd_1) - 1 and cmd_1[i] == ')'):
-                            print('*** Unknown syntax', line)
-                            return
+                    if ',' not in the_dict:
+                        the_args = the_dict.split(':')
+                        if len(the_args) == 2:
+                            for i in range(len(the_args)):
+                                the_args[i].replace("'", '').replace('"', '')
 
-                        cmd_functions[cmd_func](cls_name)
-
-                    if cmd_func in ['show', 'destroy']:
-                        cmd_arg = cmd_1[i:].replace('(', '').replace('"', '')
-                        cmd_arg = cmd_arg.replace(')', '')
-                        cmd_functions[cmd_func](cls_name + ' ' + cmd_arg)
-
-                    if cmd_func == 'update':
-                        cmd_args = cmd_1[i:].replace('(', '').replace('"', '')
-                        cmd_args = cmd_args.replace(')', '').replace('{', '')
-                        cmd_args = cmd_args.split(',')
-
-                        if len(cmd_args) > 2:
-                            first = cmd_args[0]
-                            second = cmd_args[1]
-                            last = cmd_args[2]
-
-                            the_args = first + ' ' + second + ' ' + last
-                            cmd_functions[cmd_func](cls_name + ' ' + the_args)
-
+                            args = ' '.join([id_arg, the_args[0], the_args[1]])
+                            cmd_functions[cmd_func](cmd_cls + ' ' + args)
                         else:
                             print('*** Unknown syntax:', line)
                             return
+                    else:
+                        kv = the_dict.split(',')
+                        key = value = args = ''
+                        if len(kv) % 2 == 0:
+                            for i in range(len(kv)):
+                                if i % 2 == 0:
+                                    key = kv[i]
+                                    key = key.replace("'", '')
+                                if i % 2 != 0:
+                                    value = kv[i]
+                                    value = key.replace("'", '')
+                                    value = key.replace('"', '')
+                                    value = key.replace(')', '')
 
+                                args = id_arg + ' ' + key_arg + ' ' + value_arg
+
+                                cmd_functions[cmd_func](cmd_cls + ' ' + args)
+                        else:
+                            print('*** Unknown + syntax:', line)
+                            return 
                 else:
                     print('*** Unknown syntax:', line)
                     return
@@ -279,13 +345,13 @@ class HBNBCommand(cmd.Cmd):
         from os import system
         system('clear')
 
-    def occurrence(word, c):
-        '''Return the number of occurrence of a character in a string'''
-        count = 0
-        for i in word:
-            if i == c:
-                count += 1
-        return count
+def occurrence(word, c):
+    '''Return the number of occurrence of a character in a string'''
+    count = 0
+    for i in word:
+        if i == c:
+            count += 1
+    return count
 
 def isfloat(string):
     '''Checks if a string can be converted to float
