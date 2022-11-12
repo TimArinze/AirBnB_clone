@@ -208,9 +208,7 @@ class HBNBCommand(cmd.Cmd):
             "update": self.do_update
         }
 
-        chars = [chr(32), chr(8), chr(9), chr(10), chr(11), chr(12), chr(13)]
-        for char in chars:
-            clean_line = line.replace(char, '')
+        clean_line = rtrchr(line)
 
         if '.' not in line:
             print('*** Unknown syntax:', line)
@@ -233,7 +231,7 @@ class HBNBCommand(cmd.Cmd):
         remain = clean_line[dot_idx + 1:]
 
         if '(' not in remain or ')' not in remain\
-                or ('(' in remain and remain[len(remain) - 1] !=')'):
+                or ('(' in remain and remain[len(remain) - 1] != ')'):
             print('*** Unknown syntax:', line)
             return
 
@@ -244,10 +242,10 @@ class HBNBCommand(cmd.Cmd):
             return
 
         if remain.find('(', op_idx + 1) != -1:
-                print('*** Unknown syntax:', line)
-                return
+            print('*** Unknown syntax:', line)
+            return
         if cmd_func in ['all', 'count']:
-            cp_idx = remain.find(')',op_idx + 1)
+            cp_idx = remain.find(')', op_idx + 1)
             if cp_idx != -1 and remain.find(')', cp_idx + 1) != -1:
                 print('*** Unknown syntax:', line)
                 return
@@ -261,8 +259,8 @@ class HBNBCommand(cmd.Cmd):
 
         if cmd_func in ['show', 'destroy']:
             if (remain[op_idx + 1] == '"' and remain[len(remain) - 2] != '"')\
-                    or (remain[op_idx + 1] == "'"\
-                    and remain[len(remain) - 2] != "'"):
+                    or (remain[op_idx + 1] == "'"
+                        and remain[len(remain) - 2] != "'"):
                 print('*** Unknown syntax:', line)
                 return
             cmd_arg = remain[op_idx + 2:len(remain) - 1]
@@ -314,28 +312,18 @@ class HBNBCommand(cmd.Cmd):
                             args = ' '.join([id_arg, the_args[0], the_args[1]])
                             cmd_functions[cmd_func](cmd_cls + ' ' + args)
                         else:
-                            print('*** Unknown syntax:', line)
+                            print('*** Unknown + syntax:', line)
                             return
                     else:
-                        kv = the_dict.split(',')
                         key = value = args = ''
-                        if len(kv) % 2 == 0:
-                            for i in range(len(kv)):
-                                if i % 2 == 0:
-                                    key = kv[i]
-                                    key = key.replace("'", '')
-                                if i % 2 != 0:
-                                    value = kv[i]
-                                    value = key.replace("'", '')
-                                    value = key.replace('"', '')
-                                    value = key.replace(')', '')
-
-                                args = id_arg + ' ' + key_arg + ' ' + value_arg
-
+                        kvs = the_dict.split(',')
+                        for i in kvs:
+                            kvp = i.split(':')
+                            if len(kvp) == 2:
+                                key = kvp[0]
+                                value = kvp[1]
+                                args = ' '.join([id_arg, key, value])
                                 cmd_functions[cmd_func](cmd_cls + ' ' + args)
-                        else:
-                            print('*** Unknown + syntax:', line)
-                            return 
                 else:
                     print('*** Unknown syntax:', line)
                     return
@@ -345,6 +333,7 @@ class HBNBCommand(cmd.Cmd):
         from os import system
         system('clear')
 
+
 def occurrence(word, c):
     '''Return the number of occurrence of a character in a string'''
     count = 0
@@ -352,6 +341,15 @@ def occurrence(word, c):
         if i == c:
             count += 1
     return count
+
+
+def rtrchr(line):
+    chars = [chr(32), chr(8), chr(9), chr(10), chr(11), chr(12), chr(13)]
+    clea_line = ''
+    for char in chars:
+        clean_line = line.replace(char, '')
+    return clean_line
+
 
 def isfloat(string):
     '''Checks if a string can be converted to float
