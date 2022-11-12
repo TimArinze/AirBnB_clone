@@ -16,6 +16,7 @@ class TestCity(unittest.TestCase):
         """Prepraring test cases"""
         self.my_city = City()
         self.tmp = self.my_city.updated_at
+        self.id = self.my_city.id
         self.maxDiff = None
 
     def test_isinstance_of_City(self):
@@ -47,6 +48,8 @@ class TestCity(unittest.TestCase):
         '''Testing if `id` is really an attribute'''
         with self.assertRaises(TypeError):
             self.my_city.id()
+
+        self.my_city.id = self.id
 
     def test_created_at_attribute(self):
         """All individual tests for created_at attribute"""
@@ -134,6 +137,13 @@ class TestCity(unittest.TestCase):
         self.my_city.save()
         '''Testing if updated_at changes when calling save method'''
         self.assertNotEqual(self.tmp, self.my_city.updated_at)
+
+        '''Testing if the instance is save in the file storage'''
+        key = self.my_city.__class__.__name__ + '.' + self.my_city.id
+        with open('file.json', 'r') as f:
+            from json import load
+            json_obj = load(f)
+            self.assertEqual(json_obj[key], self.my_city.to_dict())
 
     def test_str_representation(self):
         """All tests for string representation"""

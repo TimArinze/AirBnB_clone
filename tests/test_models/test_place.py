@@ -16,6 +16,7 @@ class TestPlace(unittest.TestCase):
         """Prepraring test cases"""
         self.my_place = Place()
         self.tmp = self.my_place.updated_at
+        self.id = self.my_place.id
         self.maxDiff = None
 
     def test_isinstance_of_Place(self):
@@ -47,6 +48,8 @@ class TestPlace(unittest.TestCase):
         '''Testing if `id` is really an attribute'''
         with self.assertRaises(TypeError):
             self.my_place.id()
+
+        self.my_place.id = self.id
 
     def test_created_at_attribute(self):
         """All individual tests for created_at attribute"""
@@ -293,6 +296,13 @@ class TestPlace(unittest.TestCase):
         self.my_place.save()
         '''Testing if updated_at changes when calling save method'''
         self.assertNotEqual(self.tmp, self.my_place.updated_at)
+
+        '''Testing if the instance is save in the file storage'''
+        key = self.my_place.__class__.__name__ + '.' + self.my_place.id
+        with open('file.json', 'r') as f:
+            from json import load
+            json_obj = load(f)
+            self.assertEqual(json_obj[key], self.my_place.to_dict())
 
     def test_str_representation(self):
         """All tests for string representation"""

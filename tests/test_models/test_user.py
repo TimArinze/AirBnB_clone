@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+    #!/usr/bin/python3
 '''test_user module'''
 
 
@@ -11,12 +11,19 @@ import uuid
 
 class TestUser(unittest.TestCase):
     """Never trust User/Builder inputs"""
-    @classmethod
-    def setUpClass(self):
+
+    def setUp(self):
         """Prepraring test cases"""
         self.my_user = User()
         self.tmp = self.my_user.updated_at
+        self.id = self.my_user.id
         self.maxDiff = None
+
+    def tearDown(self):
+        try:
+            os.remove('file.json')
+        except:
+            pass
 
     def test_isinstance_of_User(self):
         """Test class of an instance"""
@@ -47,6 +54,7 @@ class TestUser(unittest.TestCase):
         '''Testing if `id` is really an attribute'''
         with self.assertRaises(TypeError):
             self.my_user.id()
+        self.my_user.id = self.id
 
     def test_created_at_attribute(self):
         """All individual tests for created_at attribute"""
@@ -82,6 +90,9 @@ class TestUser(unittest.TestCase):
         self.assertIn('email', dir(User))
         self.assertNotIn('email', self.my_user.__dict__)
 
+        '''Testing type of `email`'''
+        self.assertTrue(type(self.my_user.email) == str)
+
         self.my_user.email = "black@email.com"
         self.assertIn('email', self.my_user.__dict__)
 
@@ -95,6 +106,9 @@ class TestUser(unittest.TestCase):
         '''Testing if `password` is a public attribute'''
         self.assertIn('password', dir(User))
         self.assertNotIn('password', self.my_user.__dict__)
+
+        '''Testing type of `password`'''
+        self.assertTrue(type(self.my_user.password) == str)
 
         self.my_user.password = "pswrd"
         self.assertIn('password', self.my_user.__dict__)
@@ -110,6 +124,9 @@ class TestUser(unittest.TestCase):
         self.assertIn('first_name', dir(User))
         self.assertNotIn('first_name', self.my_user.__dict__)
 
+        '''Testing type of `first_name`'''
+        self.assertTrue(type(self.my_user.first_name) == str)
+
         self.my_user.first_name = "BLACK"
         self.assertIn('first_name', self.my_user.__dict__)
 
@@ -123,6 +140,9 @@ class TestUser(unittest.TestCase):
         '''Testing if `last_name` is a public attribute'''
         self.assertIn('last_name', dir(self.my_user))
         self.assertNotIn('last_name', self.my_user.__dict__)
+
+        '''Testing type of `last_name`'''
+        self.assertTrue(type(self.my_user.last_name) == str)
 
         self.my_user.last_name = "MIGHT"
         self.assertIn('last_name', self.my_user.__dict__)
@@ -150,7 +170,7 @@ class TestUser(unittest.TestCase):
     def test_based_from_dictionary(self):
         '''Testing instanciation from a previous instance'''
         the_dict = self.my_user.to_dict()
-        my_other_model = User(**the_dict)
+        my_other_user = User(**the_dict)
         self.assertEqual(self.my_user.__dict__, my_other_model.__dict__)
         self.assertEqual(self.my_user.to_dict(), my_other_model.to_dict())
 
@@ -163,6 +183,14 @@ class TestUser(unittest.TestCase):
         '''Testing if updated_at changes when calling save method'''
         self.assertNotEqual(self.tmp, self.my_user.updated_at)
 
+        '''Testing if the instance is save in the file storage'''
+        key = self.my_user.__class__.__name__ + '.' + self.my_user.id
+        with open('file.json', 'r') as f:
+            from json import load
+            json_obj = load(f)
+            self.assertEqual(json_obj[key], self.my_user.to_dict())
+
+
     def test_str_representation(self):
         """All tests for string representation"""
 
@@ -172,6 +200,10 @@ class TestUser(unittest.TestCase):
         my_user_id = self.my_user.id
         my_user_created_at = repr(self.my_user.created_at)
         my_user_updated_at = repr(self.my_user.updated_at)
+        self.my_user.email = "black@email.com"
+        self.my_user.password = "pswrd"
+        self.my_user.first_name = "BLACK"
+        self.my_user.last_name = "MIGHT"
         s = self.my_user.__str__()
         self.assertIn("[{}] ({})".format(class_name, my_user_id), s)
         self.assertIn("'id': '{}'".format(my_user_id), s)
