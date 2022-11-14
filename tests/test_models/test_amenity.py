@@ -16,6 +16,7 @@ class TestAmenity(unittest.TestCase):
         """Prepraring test cases"""
         self.my_amenity = Amenity()
         self.tmp = self.my_amenity.updated_at
+        self.id = self.my_amenity.id
         self.maxDiff = None
 
     def test_isinstance_of_Amenity(self):
@@ -47,6 +48,8 @@ class TestAmenity(unittest.TestCase):
         '''Testing if `id` is really an attribute'''
         with self.assertRaises(TypeError):
             self.my_amenity.id()
+
+        self.my_amenity.id = self.id
 
     def test_created_at_attribute(self):
         """All individual tests for created_at attribute"""
@@ -120,6 +123,13 @@ class TestAmenity(unittest.TestCase):
         self.my_amenity.save()
         '''Testing if updated_at changes when calling save method'''
         self.assertNotEqual(self.tmp, self.my_amenity.updated_at)
+
+        '''Testing if the instance is save in the file storage'''
+        key = self.my_amenity.__class__.__name__ + '.' + self.my_amenity.id
+        with open('file.json', 'r') as f:
+            from json import load
+            json_obj = load(f)
+            self.assertEqual(json_obj[key], self.my_amenity.to_dict())
 
     def test_str_representation(self):
         """All tests for string representation"""

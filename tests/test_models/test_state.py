@@ -16,6 +16,7 @@ class TestState(unittest.TestCase):
         """Prepraring test cases"""
         self.my_state = State()
         self.tmp = self.my_state.updated_at
+        self.id = self.my_state.id
         self.maxDiff = None
 
     def test_isinstance_of_State(self):
@@ -44,6 +45,9 @@ class TestState(unittest.TestCase):
                 Using uuid.UUID function return the uuid object that gives this
                 string."""
             uuid.UUID(self.my_state.id)
+
+        self.my_state.id = self.id
+
         '''Testing if `id` is really an attribute'''
         with self.assertRaises(TypeError):
             self.my_state.id()
@@ -120,6 +124,13 @@ class TestState(unittest.TestCase):
         self.my_state.save()
         '''Testing if updated_at changes when calling save method'''
         self.assertNotEqual(self.tmp, self.my_state.updated_at)
+
+        '''Testing if the instance is save in the file storage'''
+        key = self.my_state.__class__.__name__ + '.' + self.my_state.id
+        with open('file.json', 'r') as f:
+            from json import load
+            json_obj = load(f)
+            self.assertEqual(json_obj[key], self.my_state.to_dict())
 
     def test_str_representation(self):
         """All tests for string representation"""

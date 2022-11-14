@@ -16,6 +16,7 @@ class TestReview(unittest.TestCase):
         """Prepraring test cases"""
         self.my_review = Review()
         self.tmp = self.my_review.updated_at
+        self.id = self.my_review.id
         self.maxDiff = None
 
     def test_isinstance_of_Review(self):
@@ -47,6 +48,8 @@ class TestReview(unittest.TestCase):
         '''Testing if `id` is really an attribute'''
         with self.assertRaises(TypeError):
             self.my_review.id()
+
+        self.my_review.id = self.id
 
     def test_created_at_attribute(self):
         """All individual tests for created_at attribute"""
@@ -154,6 +157,13 @@ class TestReview(unittest.TestCase):
         self.my_review.save()
         '''Testing if updated_at changes when calling save method'''
         self.assertNotEqual(self.tmp, self.my_review.updated_at)
+
+        '''Testing if the instance is save in the file storage'''
+        key = self.my_review.__class__.__name__ + '.' + self.my_review.id
+        with open('file.json', 'r') as f:
+            from json import load
+            json_obj = load(f)
+            self.assertEqual(json_obj[key], self.my_review.to_dict())
 
     def test_str_representation(self):
         """All tests for string representation"""
